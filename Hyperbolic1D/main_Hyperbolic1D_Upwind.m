@@ -20,7 +20,7 @@
 %
 %     du/dt = L(u),   where    
 %     u = [u1,u2,...,uN]'
-%     L(u) = -a/h * (u - ud),      ud = [ u_0(t), u1,...,u_{N-1} ].
+%     L(u) = -a/h * (u - ud),      ud = [ u_0(t), u1,...,u_{N-1} ]'.
 %
 % Temporal discretization: 
 %
