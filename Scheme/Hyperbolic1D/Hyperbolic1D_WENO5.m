@@ -19,17 +19,14 @@ function Lu = Hyperbolic1D_WENO5(U,a,dx)
 % alpha = max |f'(u)|
 alpha = abs(a); 
 
-% positive part
-ind = [0 +1]; 
-q2 =   WENO5_reconstruction(U,ind);
-f2 = 0.5*(a*q2 + alpha*q2);      % at x_{i+1/2}
-df2 = (f2-circshift(f2,ind))/dx; % circshift gives the values at x_{i-1/2}
+% Lax-Friedrichs split
+FU2 = 0.5*(a*U + alpha*U); % positive
+FU1 = 0.5*(a*U - alpha*U); % negative
 
-% negative part
-ind = [0 -1];
-q1 =   WENO5_reconstruction(U,ind);
-f1 = 0.5*(a*q1 - alpha*q1);      % at x_{i+1/2}
-df1 = (f1-circshift(f1,ind))/dx; % circshift gives the values at x_{i-1/2}
+% Reconstruction of f(u)
+[q2,q1] = WENO5_reconstruction(FU2,FU1);
 
 % right-hand side of  du/dt = L(u)
+df2 = (q2-circshift(q2,[0,1]))/dx;
+df1 = (q1-circshift(q1,[0,1]))/dx;
 Lu = -(df2 + df1);
