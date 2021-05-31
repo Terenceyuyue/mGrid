@@ -1,29 +1,38 @@
-function u0 = hyperbolic1D_data(x,IC)
+function pde = hyperbolic1D_data(IC,a,xL,xR)
 % References:
 %  [1] Jiang, Guang-Shan, Shu, Chi-Wang. Efficient implementation of weighted
 %      ENO schemes. J. Comput. Phys. 126 (1996), no. 1, 202-228.
 %  [2] K. Ou, P. Vincent, and A. Jameson. High-order methods for diffusion
 %      equation with energy stable flux reconstruction scheme.
+%
+% Copyright (C)  Terence Yu.
 
-Lx = x(end)-x(1); xm = (x(1)+x(end))/2;
+uexact = @(x,t) uinit(x-a*t,IC,xL,xR); 
+pde.uexact = uexact;
+
+end
+
+function u0 = uinit(x,IC,xL,xR)
+
+Lx = xR-xL; x = x/(0.5*Lx);  % [-a, a] --> [-1 1]
+
 switch IC
     case 1 % Riemann problem
         u0 = (1+0*x).*(x<=0);
     case 2 % Square Jump
-        u0 = (1+0*x).*(x<=(xm+0.1*Lx) & x>=-(xm+0.1*Lx));
+        u0 = (1+0*x).*(x<=0.2 & x>=-0.2);
     case 3 % Oleg's trapesoidal
-        u0 = exp(0.1-x).*(1+0*x).*(x<=(xm+0.1*Lx) & x>=-(xm+0.1*Lx));
+        u0 = exp(0.1-x).*(x<=0.2 & x>=-0.2);
     case 4 % combination of Gaussians ..., see Example 1 in Ref. [1]
-        u0 = combination(x);  
+        u0 = combination(x);   % [-1 1]
     case 5 % Gaussian wave
-        u0 = exp(-20*(x-xm).^2); 
+        u0 = exp(-20*x.^2); 
     case 6 % sin 
         u0 = sin(pi*x);
     case 7 % hyperbolic tangent
         mu = 0.02;
         u0 = 0.5*(1-tanh(x/(4*mu)));
 end
-
 
 end
 
