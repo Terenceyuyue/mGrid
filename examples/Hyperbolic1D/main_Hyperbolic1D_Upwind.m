@@ -49,18 +49,19 @@ hx = x(2)-x(1);
 lam = 0.5*1/a;  % CFL: a*lam = 0.5 <= 1
 dt = lam*hx;
 
-% initial value
-u_init = @(x) (1+0*x).*(x<=0); 
-%u_init = @(x) (1+0*x).*(x>=0 & x<=1);
-%u_init = @(x) sin(pi*x);
+%% PDE data
+% test cases
+IC = 1; 
+pde = hyperbolic1D_data(IC,a,xL,xR);
+uexact = pde.uexact;
 
 %% Spatial discretization
 method = 1;  % 1: forward Euler,  2: TVD Runge-Kutta
 % du/dt = L(u), u = [u1,u2,...,uN]
-Lfun = @(u,t) -a/hx*( u - [u_init(xL-a*t); u(1:end-1)] );  
+Lfun = @(u,t) -a/hx*( u - [uexact(xL,t); u(1:end-1)] );  
 
 %% Temporal discretization 
-u0 = u_init(x(2:end));  % delete x0, u0 = [u01,u02,...,u0N]
+u0 = uexact(x(2:end),t0);  % delete x0, u0 = [u01,u02,...,u0N]
 for t = dt:dt:tf
     switch method
         case 1   % forward Euler
@@ -70,10 +71,10 @@ for t = dt:dt:tf
             u2 = 3/4*u0 + 1/4*u1 + 1/4*dt*Lfun(u1,t);  
             u = 1/3*u0 + 2/3*u2 + 2/3*dt*Lfun(u2,t);  
     end
-    uf = [u_init(xL-a*t); u]; % add u(0,t)
+    uf = [uexact(xL,t); u]; % add u(0,t)
     % show 
     plot(x,uf,'-r', ...
-         x,u_init(x-a*t),'--b','linewidth',2);
+         x,uexact(x,t),'--b','linewidth',2);
     xlim([xL, xR]);
     legend('Numerical solution', 'Exact solution');
     drawnow; 

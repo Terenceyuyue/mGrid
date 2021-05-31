@@ -40,17 +40,18 @@ x = linspace(xL,xR,Nx)'; dx = x(2)-x(1);
 lam = 0.5*1/a;  % a*lam = 0.5 < 1
 dt = lam*dx;
 
-% initial value
-u_init = @(x) (1+0*x).*(x<=0);
-%u_init = @(x) (1+0*x).*(x>=0 & x<=1);
-%u_init = @(x) sin(pi*x);
+%% PDE data
+% test cases
+IC = 1; 
+pde = hyperbolic1D_data(IC,a,xL,xR);
+uexact = pde.uexact;
 
 %% Finite difference method
-u0 = u_init(x);  % t_n 
+u0 = uexact(x,t0);  % t_n 
 for t = dt:dt:tf
     u = zeros(size(x));
     % i = 0
-    u(1) = u_init(xL-a*t);
+    u(1) = uexact(xL,t);
     % i = 1:N-1: Lax-Wendroff
     u(2:end-1) = u0(2:end-1) - 0.5*a*lam*( u0(3:end) - u0(1:end-2) ) ...
                 + 0.5*(a*lam)^2*( u0(3:end) - 2*u0(2:end-1) + u0(1:end-2) ); 
@@ -58,7 +59,7 @@ for t = dt:dt:tf
     u(end) = u0(end) - a*lam*( u0(end) - u0(end-1) );
     % show
     plot(x,u,'-r', ...
-         x,u_init(x-a*t),'--b','linewidth',2);
+         x,uexact(x,t),'--b','linewidth',2);
     xlim([xL, xR]);
     legend('Numerical solution', 'Exact solution');
     drawnow;
