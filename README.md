@@ -3,7 +3,7 @@ MATLAB implementation of grid based methods (FDM and FVM)
 
 ## Installation of FLASH software
   
-  https://flash.rochester.edu/site/flashcode/
+ See FLASH_installation.pdf.  Flash center: https://flash.rochester.edu/site/flashcode/
 
 ## WENO scheme for 1-D hyperbolic equation
 
